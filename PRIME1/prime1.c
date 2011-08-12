@@ -16,13 +16,24 @@ is_prime (int n)
     }
     return 1;
 }
+int
+mark_multiple_of (int index, int multiple_of, int min) {
+    //printf ("(%d+%d) %% %d\n", index, min, multiple_of);
+    if ((index+min) == 1)
+        return -1;
+
+    if ((index+min) == multiple_of)
+        return 1;
+
+    if (((index+min)%multiple_of) == 0)
+        return -1;
+}
 
 void
-show_primes (int m, int n)
-{
+show_primes (int m, int n) {
     int i = 0;
     int j = 0;
-    unsigned k = 0;
+    int k = 0;
     int l = 0;
     int len = 0;
     int *array = NULL;
@@ -30,64 +41,46 @@ show_primes (int m, int n)
     // make M <= N
     if (m > n)
         m ^= n ^= m ^= n;   // swap
+
     len = n - m + 1;
     array = (int *) malloc (sizeof (int) * len);
     if (NULL == array) {
         printf ("malloc failed!\n");
         return;
     }
-    memset(array, 0, len);
+    memset(array, 1, len);
 
-    // fill
-    for (i = 0; i < len; i++) {
-        if (array[i] == -1)
-            continue;
-        array[i] = i+m;
-        //printf ("array[%d] == %d\n",  i,  array[i]);
-        for (j = 2; j < array[i]-1; j++) {
-            //printf ("[i]:%d j:%d\n", array[i], j);
-            if (!(array[i] % j) && (array[i] != j)) {
-                l = i;
-                do {
-                    k = array[l];
-                    array[l] = -1;
-                    //printf ("l:%d [l]:%d [l+1]:%d ", l, array[l], array[l+1]);
-                    //printf ("k:%d j:%d, m:%d len:%d\n", k, j, m, len);
-                    l = ((k*j) - m);
-                    if (l >= len)
-                        break;
-                } while (l >= 0);
-                break;
-            }
-        }
-    }
-    if (array[0] == 1)
-        array[0] = -1;
-
-    /*
     // erathostenes's sieve
     for (i = 0; i < len; i++) {
-        for (j = 3; j <= n; j++) {
-            //printf ("[%d]: %d %% %d\n", i, array[i], j);
-            if (array[i] == -1)
-                break;
-            if (0 == (array[i] % j) && (array[i] != j)) {
-                k = i;
-                do {
-                    //printf ("remove %d from array\n", array[k]);
-                    array[k] = -1;
-                    k = (k+1)*j;
-                } while (k <= len);
-                break;
+        for (j = m; j > 1; j--) {
+            if (array[i] >= 0) {
+                if (0 > mark_multiple_of (i, j, m)) {
+                    array[i] = -1;
+                    /*
+                    for (k = i; k < len; k += k) {
+                        array[k] = -1;
+                    }
+                    */
+                }
+            }
+        }
+        for (j = m; j <= (n/2); j++) {
+            if (array[i] >= 0 && j > 1) {
+                if (0 > mark_multiple_of (i, j, m)) {
+                    array[i] = -1;
+                    /*
+                    for (k = i; k < len; k += k) {
+                        array[k] = -1;
+                    }
+                    */
+                }
             }
         }
     }
-    */
-
     // show the prime
     for (i = 0; i < len; i++) {
         if (array[i] != -1)
-            printf ("%d\n", array[i]);
+            printf ("%d\n", i + m);
     }
     free (array);
 }
