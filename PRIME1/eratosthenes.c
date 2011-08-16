@@ -1,42 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-#define PRIME (0)
-#define NPRIME (1)
+#define PRIME (1)
+#define NPRIME (0)
 
-int *array = NULL;
+unsigned char *sieve;
 int len = 0;
 
 int is_prime (int n) {
     int i = 2;
+    int sqrt_n = 0;
 
     if (1 >= n)
         return NPRIME;
+    // heuristic
+    if (n % 2 == 0)
+        return NPRIME;
 
-    for (i = 2; i < (n/2)+1; i++) {
-        if (i == n)
-            return PRIME;
+    sqrt_n = (int) sqrt((double) n) + 1;
+
+    for (i = 2; i < sqrt_n; i++) {
         if (!(n % i))
             return NPRIME;
     }
     return PRIME;
 }
 
-int mark_prime (int idx) {
-    int i = idx;
-    array[i] = is_prime(i);
-    for (i = i+idx; i < len; i += idx) {
-        if (array[i] == NPRIME)
-            break;
-        array[i] = NPRIME;
+void fill_sieve(int m, int n, int len) {
+    int i = 0;
+    int j = 0;
+    if (m == 1)
+        sieve[0] = NPRIME;
+    // heuristic
+    if (m % 2 == 0) {
+        for (i = 0; i < len; i += 2)
+            sieve[i] = NPRIME;
+    } else {
+        for (i = 1; i < len; i += 2)
+            sieve[i] = NPRIME;
+    }
+
+    for (i = 0; i < len; i++) {
+        if (sieve[i] == PRIME && is_prime(i+m) > 0) {
+            for (j = (i+m)*2; j <= len; j += (i+m))
+                sieve[j-1] = NPRIME;
+        } else {
+            sieve[i] = NPRIME;
+        }
     }
 }
 
 void print_prime() {
     int i = 0;
     for (i = 2; i < len; i++) {
-        if (array[i] == 0) {
+        if (sieve[i] == PRIME) {
             printf ("%d\n", i);
         }
     }
@@ -52,19 +71,15 @@ int main (int argc, char* argv[]) {
     }
 
     len = atoi(argv[1]);
-    array = (int *) malloc (sizeof (int) * len);
-    memset(array, PRIME, len);
+    sieve = (unsigned char *) malloc (sizeof (unsigned char) * len);
+    memset(sieve, PRIME, len);
 
-    array[0] = 1;
-    array[1] = 1;
-    for (i = 2; i < len; i++) {
-        if (array[i] == PRIME) {
-            mark_prime(i);
-        }
-    }
+    sieve[0] = 1;
+    sieve[1] = 1;
+    fill_sieve(2, len, len-2);
 
     //print_prime();
-    free (array);
+    free (sieve);
     printf ("length: %d\n", len);
     return 0;
 }

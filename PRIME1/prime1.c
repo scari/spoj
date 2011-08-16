@@ -14,6 +14,10 @@ int is_prime (int n) {
     if (1 >= n)
         return NPRIME;
 
+    // heuristic
+    if (n % 2 == 0)
+        return NPRIME;
+
 	sqrt_n = (int) sqrt((double) n) + 1;
 
     for (i = 2; i < sqrt_n; i++) {
@@ -24,19 +28,27 @@ int is_prime (int n) {
 }
 
 void fill_sieve(int m, int n, int len) {
-	int i = 0;
-	int j = 0;
-	if (m == 1)
-		sieve[0] = NPRIME;
+    int i = 0;
+    int j = 0;
+    if (m == 1)
+        sieve[0] = NPRIME;
+    // heuristic
+    if (m != 2 && m % 2 == 0) {
+        for (i = 0; i < len; i += 2)
+            sieve[i] = NPRIME;
+    } else {
+        for (i = 1; i < len; i += 2)
+            sieve[i] = NPRIME;
+    }
 
-	for (i = 0; i < len; i++) {
-		if (sieve[i] == PRIME && is_prime(i+m) > 0) {
-			for (j = (i+m)*2; j <= len; j += (i+m))
-				sieve[j-1] = NPRIME;
-		} else {
-			sieve[i] = NPRIME;
-		}
-	}
+    for (i = 0; i < len; i++) {
+        if (sieve[i] == PRIME && is_prime(i+m) > 0) {
+            for (j = (i+m)*2; j <= len; j += (i+m))
+                sieve[j-1] = NPRIME;
+        } else {
+            sieve[i] = NPRIME;
+        }
+    }
 }
 
 void show_primes (int m, int n) {
@@ -56,7 +68,8 @@ void show_primes (int m, int n) {
     for (i = 0; i < len; i++) {
         //if (is_prime(i + m))
         if (sieve[i] == PRIME)
-            printf ("%d\n", i + m);
+            NULL;
+            //printf ("%d\n", i + m);
     }
 	free (sieve);
 }
