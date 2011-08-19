@@ -17,7 +17,7 @@ int is_beautiful(unsigned long long n) {
 			return NOT_BEAUTIFUL;
 		t = t/10;
 	}
-	//printf ("%llu ", n);
+	printf ("%llu ", n);
 	return BEAUTIFUL;
 }
 void find_beautiful(unsigned long long l, unsigned long long r) {
@@ -27,7 +27,7 @@ void find_beautiful(unsigned long long l, unsigned long long r) {
 		if (is_beautiful(i) == BEAUTIFUL)
 			count++;
 	}
-	printf ("%lu\n", count);
+	printf ("\n\n%lu\n", count);
 }
 int main (int argc, char *argv[]) {
     int testcase = 0;
